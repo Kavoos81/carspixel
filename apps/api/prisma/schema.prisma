@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  USER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Car {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  brand       String
+  year        Int
+  coverImage  String?
+  specs       Json?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?
+  content     String
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  description String
+  price       Int           // قیمت به تومان
+  stock       Int           @default(0)
+  published   Boolean       @default(false)
+
+  images      ProductImage[]
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  title     String
+  slug      String    @unique
+  products  Product[]
+}
+
